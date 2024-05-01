@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<modelmapper.version>3.2.0</modelmapper.version>
+		<springdoc.version>2.5.0</springdoc.version>
 	</properties>
 	<dependencies>
 
@@ -69,6 +70,21 @@
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>${modelmapper.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+		<!-- http://api.convencao.local:8082/swagger-ui/index.html -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-common -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-common</artifactId>
+			<version>${springdoc.version}</version>
 		</dependency>
 
 

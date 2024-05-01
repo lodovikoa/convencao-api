@@ -4,6 +4,7 @@ import com.lodoviko.convencao.api.v1.assembler.EstadoDTOAssembler;
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTODisassembler;
 import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
 import com.lodoviko.convencao.api.v1.dto.input.EstadoInputDTO;
+import com.lodoviko.convencao.api.v1.openapi.EstadoControllerOpenApi;
 import com.lodoviko.convencao.domain.model.Estado;
 import com.lodoviko.convencao.domain.service.EstadoService;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("v1/estados")
-public class EstadoController {
+public class EstadoController implements EstadoControllerOpenApi {
 
     @Autowired
     private EstadoService estadoService;

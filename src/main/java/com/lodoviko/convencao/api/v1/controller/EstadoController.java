@@ -41,15 +41,13 @@ public class EstadoController implements EstadoControllerOpenApi {
         log.info("Listar estados GET v1/estados - página atual {}", pageable.getPageNumber());
 
         Page<Estado> estadosPage = estadoService.listar(pageable);
-        PagedModel<EstadoDTO> estadoDTOPagedModel = pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
 
-        return estadoDTOPagedModel;
+        return pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
     }
 
     @GetMapping("/{sqEstado}")
     public EstadoDTO buscar(@PathVariable Long sqEstado) {
         log.info("Buscar Estado GET v1/estados/{}", sqEstado);
-
         var estado = estadoService.buscar(sqEstado);
         return estadoDTOAssembler.toModel(estado);
     }
@@ -69,6 +67,7 @@ public class EstadoController implements EstadoControllerOpenApi {
     @Transactional
     @PutMapping("{sqEstado}")
     public EstadoDTO alterar(@PathVariable Long sqEstado, @RequestBody @Valid EstadoInputDTO estadoInputDTO) {
+        log.info(String.format("Alterar Estado PUT v1/estados/ID - %s", sqEstado));
         var estadoAtual = estadoService.buscar(sqEstado);
 
         estadoDTODisassembler.copyToDomainObject(estadoInputDTO, estadoAtual);
@@ -80,6 +79,7 @@ public class EstadoController implements EstadoControllerOpenApi {
     @DeleteMapping("{sqEstado}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Long sqEstado) {
+        log.info(String.format("Excluir Estado DELETE v1/estados/ID - %s", sqEstado));
         estadoService.excluir(sqEstado);
     }
 }

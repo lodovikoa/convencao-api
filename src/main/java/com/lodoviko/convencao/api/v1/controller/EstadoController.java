@@ -2,10 +2,11 @@ package com.lodoviko.convencao.api.v1.controller;
 
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTOAssembler;
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTODisassembler;
-import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
 import com.lodoviko.convencao.api.v1.dto.input.EstadoInputDTO;
+import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
 import com.lodoviko.convencao.api.v1.openapi.EstadoControllerOpenApi;
 import com.lodoviko.convencao.domain.model.Estado;
+import com.lodoviko.convencao.domain.repository.EstadoRepository;
 import com.lodoviko.convencao.domain.service.EstadoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("v1/estados")
 public class EstadoController implements EstadoControllerOpenApi {
 
@@ -36,6 +38,9 @@ public class EstadoController implements EstadoControllerOpenApi {
     @Autowired
     private PagedResourcesAssembler<Estado> pagedResourcesAssembler;
 
+    @Autowired
+    private EstadoRepository estadoRepository;
+
     @GetMapping
     public PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) Pageable pageable) {
         log.info("Listar estados GET v1/estados - página atual {}", pageable.getPageNumber());
@@ -44,6 +49,13 @@ public class EstadoController implements EstadoControllerOpenApi {
 
         return pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
     }
+
+//    @GetMapping
+//    public List<Estado> listar() {
+//        var estados = estadoRepository.findAll();
+//
+//        return estados;
+//    }
 
     @GetMapping("/{sqEstado}")
     public EstadoDTO buscar(@PathVariable Long sqEstado) {
@@ -56,7 +68,7 @@ public class EstadoController implements EstadoControllerOpenApi {
     @Transactional
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EstadoDTO incluir(@RequestBody @Valid EstadoInputDTO estadoInputDTO) {
+    public EstadoDTO cadastrar(@RequestBody @Valid EstadoInputDTO estadoInputDTO) {
         log.info(String.format("Salvar Estado POST v1/estados - %s", estadoInputDTO.getDsUf()));
 
         Estado estado = estadoDTODisassembler.toDomainObject(estadoInputDTO);

@@ -33,7 +33,7 @@ public interface EstadoControllerOpenApi {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Estado criado", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = EstadoDTO.class))})
     })
-    public EstadoDTO incluir(EstadoInputDTO estadoInputDTO);
+    public EstadoDTO cadastrar(EstadoInputDTO estadoInputDTO);
 
     @Operation(summary = "Alterar um Estado")
     @ApiResponses({

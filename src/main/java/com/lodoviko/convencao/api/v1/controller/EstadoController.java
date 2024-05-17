@@ -11,18 +11,15 @@ import com.lodoviko.convencao.domain.service.EstadoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("v1/estados")
 public class EstadoController implements EstadoControllerOpenApi {
 
@@ -41,21 +38,21 @@ public class EstadoController implements EstadoControllerOpenApi {
     @Autowired
     private EstadoRepository estadoRepository;
 
-    @GetMapping
-    public PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) Pageable pageable) {
-        log.info("Listar estados GET v1/estados - página atual {}", pageable.getPageNumber());
-
-        Page<Estado> estadosPage = estadoService.listar(pageable);
-
-        return pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
-    }
-
 //    @GetMapping
-//    public List<Estado> listar() {
-//        var estados = estadoRepository.findAll();
+//    public PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) Pageable pageable) {
+//        log.info("Listar estados GET v1/estados - página atual {}", pageable.getPageNumber());
 //
-//        return estados;
+//        Page<Estado> estadosPage = estadoService.listar(pageable);
+//
+//        return pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
 //    }
+
+    @GetMapping
+    public List<Estado> listar() {
+        var estados = estadoRepository.findAll();
+
+        return estados;
+    }
 
     @GetMapping("/{sqEstado}")
     public EstadoDTO buscar(@PathVariable Long sqEstado) {

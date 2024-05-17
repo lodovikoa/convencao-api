@@ -3,24 +3,19 @@ package com.lodoviko.convencao.api.v1.openapi;
 import com.lodoviko.convencao.api.exceptionhandler.Problem;
 import com.lodoviko.convencao.api.v1.dto.input.EstadoInputDTO;
 import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
-import com.lodoviko.convencao.core.openapi.PageableParameter;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.hateoas.PagedModel;
 
 @Tag(name = "Estados")
 public interface EstadoControllerOpenApi {
 
-    @Operation(summary = "Listar Estados")
-    @PageableParameter
-    PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) @Parameter(hidden = true) Pageable pageable);
+//    @Operation(summary = "Listar Estados")
+//    @PageableParameter
+//    PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) @Parameter(hidden = true) Pageable pageable);
 
     @Operation(summary = "Buscar Estado pelo ID")
     @ApiResponses({

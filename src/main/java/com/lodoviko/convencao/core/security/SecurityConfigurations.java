@@ -28,8 +28,8 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/estados").hasRole("guCftAdministrador")
-                        .anyRequest().authenticated())
+                        .requestMatchers(HttpMethod.POST, "/v1/estados").permitAll() //hasRole("guCftAdministrador")
+                        .anyRequest().permitAll())  //authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

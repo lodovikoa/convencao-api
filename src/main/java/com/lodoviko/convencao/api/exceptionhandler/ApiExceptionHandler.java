@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -22,7 +23,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,14 +54,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     .dsTitulo(HttpStatus.valueOf(statusCode.value()).getReasonPhrase())
                     .cdStatus(statusCode.value())
                     .dsMensUsuario(MSG_ERRO_GENERICA_USUARIO_FINAL)
-                    .dtData(OffsetDateTime.now())
+                    .dtData(LocalDateTime.now())
                     .build();
         } else if (body instanceof String) {
             body = Problem.builder()
                     .dsTitulo((String) body)
                     .cdStatus(statusCode.value())
                     .dsMensUsuario(MSG_ERRO_GENERICA_USUARIO_FINAL)
-                    .dtData(OffsetDateTime.now())
+                    .dtData(LocalDateTime.now())
                     .build();
         }
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
@@ -132,6 +133,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return this.handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        var status = HttpStatus.FORBIDDEN;
+        var problemType = ProblemType.DADOS_INVALIDOS;
+        var detail = ex.getMessage();
+        var problem = createProblemBuilder(status, problemType, detail, "Usuario ou senha inválido", null).build();
+
+        log.info(String.format("ERRO: %s", ex));
+        return this.handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
     private ResponseEntity<Object> handlervalidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
         ProblemType problemType = ProblemType.DADOS_INVALIDOS;
@@ -161,7 +173,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private Problem.ProblemBuilder createProblemBuilder(HttpStatus status, ProblemType problemType, String detail, String userMessage, List<Problem.Objeto> objectFields) {
         return  Problem.builder()
                 .cdStatus(status.value())
-                .dtData(OffsetDateTime.now())
+                .dtData(LocalDateTime.now())
                 .dsTipo(problemType.getUri())
                 .dsTitulo(problemType.getTitle())
                 .dsDetalhe(detail)

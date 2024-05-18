@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -13,7 +13,7 @@ import java.util.List;
 public class Problem {
 
     private Integer cdStatus;
-    private OffsetDateTime dtData;
+    private LocalDateTime dtData;
     private String dsTipo;
     private String dsTitulo;
     private String dsDetalhe;

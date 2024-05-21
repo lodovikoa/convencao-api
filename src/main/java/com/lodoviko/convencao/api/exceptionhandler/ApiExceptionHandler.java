@@ -1,6 +1,7 @@
 package com.lodoviko.convencao.api.exceptionhandler;
 
 import com.lodoviko.convencao.domain.exception.EntidadeNaoEncontradaException;
+import com.lodoviko.convencao.domain.exception.RecursoBloqueadoException;
 import com.lodoviko.convencao.domain.exception.RecursoJaCadastradoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,16 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleEntidadeNaoEncontradaException(EntidadeNaoEncontradaException ex, WebRequest request) {
         var status = HttpStatus.NOT_FOUND;
         var problemType = ProblemType.RECURSO_NAO_ENCONTRADO;
+        var detail = ex.getMessage();
+        var problem = createProblemBuilder(status, problemType, detail, detail, null).build();
+
+        return this.handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(RecursoBloqueadoException.class)
+    public ResponseEntity<?> handleNegocioException(RecursoBloqueadoException ex, WebRequest request) {
+        var status = HttpStatus.LOCKED;
+        var problemType = ProblemType.RECURSO_BLOQUEADO;
         var detail = ex.getMessage();
         var problem = createProblemBuilder(status, problemType, detail, detail, null).build();
 

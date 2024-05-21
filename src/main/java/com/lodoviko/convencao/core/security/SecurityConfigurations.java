@@ -28,8 +28,10 @@ public class SecurityConfigurations {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/usuarios/recuperarSenha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/estados").permitAll() //hasRole("guCftAdministrador")
-                        .anyRequest().permitAll())  //authenticated())
+                        .requestMatchers(HttpMethod.GET, "/v1/estados").permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

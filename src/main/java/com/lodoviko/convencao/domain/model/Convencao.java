@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Data
@@ -38,7 +37,9 @@ public class Convencao {
     @Column(name = "con_ds_cidade", length = 100)
     private String dsCidade;
 
-    // est_sq_estado	int
+    @ManyToOne
+    @JoinColumn(name = "est_sq_estado", nullable = true)
+    private Estado estado;
 
     @Column(name = "con_ds_pais", length = 50)
     private String dsPais;

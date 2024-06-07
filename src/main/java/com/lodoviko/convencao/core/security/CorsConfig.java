@@ -7,11 +7,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-public class Webconfig implements WebMvcConfigurer {
+public class CorsConfig implements WebMvcConfigurer {
 
     // Tratar problema de CORS
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:4200")
+                .allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 }

@@ -3,13 +3,21 @@ package com.lodoviko.convencao.api.v1.controller;
 import com.lodoviko.convencao.api.v1.dto.input.AuthenticationDTO;
 import com.lodoviko.convencao.api.v1.dto.model.LoginResponseDTO;
 import com.lodoviko.convencao.core.security.TokenService;
+import com.lodoviko.convencao.domain.model.Trancode;
 import com.lodoviko.convencao.domain.model.Usuario;
+import com.lodoviko.convencao.domain.service.TrancodeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("v1/auth")
@@ -19,6 +27,9 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private TrancodeService trancodeService;
+
+    @Autowired
     private TokenService tokenService;
 
     @PostMapping("/login")
@@ -26,8 +37,19 @@ public class AuthenticationController {
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        var token = tokenService.generateToken((Usuario) auth.getPrincipal());
+        var usuario = ((Usuario) auth.getPrincipal());
+
+        // Buscar trancodes associados ao grupo do usuario
+        List<Trancode> trancodesTemp = trancodeService.listarTrancodesUsuario(usuario.getDsLogin());
+
+       // var trancodes = trancodeDTOAssembler.toCollectionModel(trancodesTemp);
+        List<String> trancodes = new ArrayList<>();
+        for(Trancode t : trancodesTemp) {
+            trancodes.add(t.getDsTrancode());
+        }
+
+        return ResponseEntity.ok(new LoginResponseDTO(token, usuario.getDsLogin(), usuario.getDsNome(), trancodes));
     }
 }

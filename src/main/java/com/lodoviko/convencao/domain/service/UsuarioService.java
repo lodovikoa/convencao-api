@@ -50,6 +50,7 @@ public class UsuarioService {
         var mensagem = EnvioEmailService.Mensagem.builder()
                 .assunto("CONFRATERES - Recuperação de senha")
                 .corpo("recuperar-senha.html")
+                .variavel("usuario", usuario)
                 .variavel("dsSenha", senhaNova)
                 .destinatario(usuario.getDsEmail())
                 .build();

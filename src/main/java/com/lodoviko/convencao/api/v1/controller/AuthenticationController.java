@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,9 +44,13 @@ public class AuthenticationController {
         List<Trancode> trancodesTemp = trancodeService.listarTrancodesUsuario(usuario.getDsLogin());
 
        // var trancodes = trancodeDTOAssembler.toCollectionModel(trancodesTemp);
-        List<String> trancodes = new ArrayList<>();
+        String trancodes = "";
         for(Trancode t : trancodesTemp) {
-            trancodes.add(t.getDsTrancode());
+            trancodes += t.getDsTrancode() + ";";
+        }
+
+        if(trancodes.length() > 0 && trancodes.charAt(trancodes.length() - 1)  == ';'){
+            trancodes = trancodes.substring(0, trancodes.length() -1);
         }
 
         return ResponseEntity.ok(new LoginResponseDTO(token, usuario.getDsLogin(), usuario.getDsNome(), trancodes));

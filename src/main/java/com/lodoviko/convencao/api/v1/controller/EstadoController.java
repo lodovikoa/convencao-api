@@ -2,15 +2,18 @@ package com.lodoviko.convencao.api.v1.controller;
 
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTOAssembler;
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTODisassembler;
+import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
 import com.lodoviko.convencao.api.v1.openapi.EstadoControllerOpenApi;
 import com.lodoviko.convencao.domain.model.Estado;
 import com.lodoviko.convencao.domain.repository.EstadoRepository;
 import com.lodoviko.convencao.domain.service.EstadoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +21,11 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("v1/estados/")
+@RequestMapping("v1/estados")
 public class EstadoController implements EstadoControllerOpenApi {
 
+    @Autowired
+    ModelMapper modelMapper;
     @Autowired
     private EstadoService estadoService;
 
@@ -46,10 +51,9 @@ public class EstadoController implements EstadoControllerOpenApi {
 //    }
 
     @GetMapping
-    public List<Estado> listar() {
+    public ResponseEntity<List<EstadoDTO>> listar() {
         var estados = estadoRepository.findAll();
-
-        return estados;
+        return ResponseEntity.ok(estadoDTOAssembler.toCollectionModel(estados));
     }
 
 //    @GetMapping("/{sqEstado}")

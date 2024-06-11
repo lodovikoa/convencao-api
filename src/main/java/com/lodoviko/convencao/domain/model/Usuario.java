@@ -1,5 +1,6 @@
 package com.lodoviko.convencao.domain.model;
 
+import com.lodoviko.convencao.domain.exception.RecursoBloqueadoException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -81,6 +82,9 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
+        if(!this.isSituacao) {
+            throw new RecursoBloqueadoException("Usuário bloqueado. Contacte o administrador.");
+        }
         return true;
     }
 

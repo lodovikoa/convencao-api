@@ -30,12 +30,12 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/usuarios/recuperarSenha").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/v1/estados/").permitAll() //hasRole("guCftAdministrador")
+                        .requestMatchers(HttpMethod.POST, "/v1/estados").permitAll() //hasRole("guCftAdministrador")
                         .requestMatchers(HttpMethod.PUT, "/v1/estados/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/estados/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/v1/estados/*").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/v1/convencao/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/convencao").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/v1/convencao/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/convencao/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/v1/convencao/*").permitAll()

@@ -1,5 +1,6 @@
 package com.lodoviko.convencao.domain.service;
 
+import com.lodoviko.convencao.domain.exception.RecursoJaCadastradoException;
 import com.lodoviko.convencao.domain.exception.RecursoNaoEncontradoException;
 import com.lodoviko.convencao.domain.model.Convencao;
 import com.lodoviko.convencao.domain.repository.ConvencaoRepository;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ConvencaoService {
@@ -28,6 +28,13 @@ public class ConvencaoService {
 
         // Retirar espaços em branco no ínicio e fim de cada campo string
         // Fazer validações
+        if(convencaoRepository.existsByDsReduzidoAndSqConvencaoNot(convencao.getDsReduzido(), 0L)) {
+            throw new RecursoJaCadastradoException(String.format("Convenção com nome reduzido %s já encontra-se cadastrado", convencao.getDsReduzido()));
+        }
+
+        if(convencaoRepository.existsByDsConvencaoAndSqConvencaoNot(convencao.getDsConvencao(), 0L)) {
+            throw new RecursoJaCadastradoException(String.format("Convenção com nome %s já encontra-se cadastrado", convencao.getDsConvencao()));
+        }
 
         // Setar auditoria
         convencao.setAuditoriaData(OffsetDateTime.now());
@@ -37,24 +44,25 @@ public class ConvencaoService {
     }
 
     public Convencao alterar(long sqConvencao, Convencao convencao) {
-        // Verificar se a convenção existe no bd
-        if(!convencaoRepository.existsById(sqConvencao)) {
-            throw new RecursoNaoEncontradoException(String.format("Convenção com ID %d não localizado!", sqConvencao));
-        }
-
-        Optional<Convencao> convencaoOptional = convencaoRepository.findById(sqConvencao);
-        Convencao convencaoAtual = convencaoOptional.get();
-
+    // Buscar a convenção atual, caso não exista o método buscar irá lançar erro
+        Convencao convencaoAtual = this.buscar(sqConvencao);
 
         // Retirar espaços em branco do inicio/fim de cada campo string
         // Fazer validações
+        if(convencaoRepository.existsByDsReduzidoAndSqConvencaoNot(convencao.getDsReduzido(), sqConvencao)) {
+            throw new RecursoJaCadastradoException(String.format("Convenção com nome reduzido %s já encontra-se cadastrado", convencao.getDsReduzido()));
+        }
+
+        if(convencaoRepository.existsByDsConvencaoAndSqConvencaoNot(convencao.getDsConvencao(), sqConvencao)) {
+            throw new RecursoJaCadastradoException(String.format("Convenção com nome %s já encontra-se cadastrado", convencao.getDsConvencao()));
+        }
 
         convencao.setSqConvencao(sqConvencao);
 
         // Setar auditoria
         convencao.setAuditoriaData(OffsetDateTime.now());
         convencao.setAuditoriaUsuario("Teste");
-        System.out.println("------------------------ sqConvencao:" + convencaoAtual.getSqConvencao() + " Redzido: " + convencaoAtual.getDsReduzido());
+
         return convencaoRepository.save(convencao);
     }
 

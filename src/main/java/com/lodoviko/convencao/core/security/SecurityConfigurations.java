@@ -40,7 +40,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.GET, "/v1/convencao/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/v1/convencao/*").permitAll()
 
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

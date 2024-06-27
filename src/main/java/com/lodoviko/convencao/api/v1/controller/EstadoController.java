@@ -2,17 +2,22 @@ package com.lodoviko.convencao.api.v1.controller;
 
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTOAssembler;
 import com.lodoviko.convencao.api.v1.assembler.EstadoDTODisassembler;
+import com.lodoviko.convencao.api.v1.dto.input.EstadoInputDTO;
 import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
+import com.lodoviko.convencao.api.v1.dto.model.EstadoDTOPage;
+import com.lodoviko.convencao.api.v1.dto.model.PaginacaoDTO;
 import com.lodoviko.convencao.api.v1.openapi.EstadoControllerOpenApi;
 import com.lodoviko.convencao.domain.model.Estado;
-import com.lodoviko.convencao.domain.repository.EstadoRepository;
 import com.lodoviko.convencao.domain.service.EstadoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("v1/estados")
+@RequestMapping(value = "v1/estados", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EstadoController implements EstadoControllerOpenApi {
 
     @Autowired
@@ -35,92 +40,48 @@ public class EstadoController implements EstadoControllerOpenApi {
     @Autowired
     private EstadoDTODisassembler estadoDTODisassembler;
 
-    @Autowired
-    private PagedResourcesAssembler<Estado> pagedResourcesAssembler;
-
-    @Autowired
-    private EstadoRepository estadoRepository;
-
-//    @GetMapping
-//    public PagedModel<EstadoDTO> listar(@PageableDefault(size = 10) Pageable pageable) {
-//        log.info("Listar estados GET v1/estados - página atual {}", pageable.getPageNumber());
-//
-//        Page<Estado> estadosPage = estadoService.listar(pageable);
-//
-//        return pagedResourcesAssembler.toModel(estadosPage, estadoDTOAssembler);
-//    }
-
     @GetMapping
-    public ResponseEntity<List<EstadoDTO>> listar() {
-        var estados = estadoRepository.findAll();
-        return ResponseEntity.ok(estadoDTOAssembler.toCollectionModel(estados));
+    public ResponseEntity<EstadoDTOPage> listar(@PageableDefault(size = 10) Pageable pageable) {
+        log.info(String.format("Listar estados GET v1/estados - paginado: Página numero: %s - qtde elementos na página: %s", pageable.getPageNumber(), pageable.getPageSize()));
+
+        Page estadosPage = estadoService.listar(pageable);
+        PaginacaoDTO paginacaoDTO = new PaginacaoDTO(estadosPage.getPageable().getPageSize(), estadosPage.getPageable().getPageNumber(), estadosPage.getTotalPages(), estadosPage.getTotalElements(), estadosPage.isFirst(),estadosPage.isLast());
+        List<EstadoDTO> estadosDTO = estadoDTOAssembler.toCollectionModel(estadosPage.getContent());
+
+        return ResponseEntity.ok(new EstadoDTOPage(estadosDTO, paginacaoDTO));
     }
 
-//    @GetMapping("/{sqEstado}")
-//    public EstadoDTO buscar(@PathVariable Long sqEstado) {
-//        log.info("Buscar Estado GET v1/estados/{}", sqEstado);
-//        var estado = estadoService.buscar(sqEstado);
-//        return estadoDTOAssembler.toModel(estado);
-//    }
-
-    @GetMapping("{sqEstado}")
-    public Estado buscar(@PathVariable Long sqEstado) {
-        log.info("Buscar Estado GET v1/estados/{}", sqEstado);
+    @GetMapping("/{sqEstado}")
+    public ResponseEntity<EstadoDTO> buscar(@PathVariable Long sqEstado) {
+        log.info(String.format("Buscar Estado GET v1/estados/{%s}", sqEstado));
         var estado = estadoService.buscar(sqEstado);
-        return estado;
+        return ResponseEntity.ok(estadoDTOAssembler.toModel(estado));
     }
-
-//    @Transactional
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public EstadoDTO cadastrar(@RequestBody @Valid EstadoInputDTO estadoInputDTO) {
-//        log.info(String.format("Salvar Estado POST v1/estados - %s", estadoInputDTO.getDsUf()));
-//
-//        Estado estado = estadoDTODisassembler.toDomainObject(estadoInputDTO);
-//        estado = estadoService.salvar(estado);
-//        return estadoDTOAssembler.toModel(estado);
-//    }
 
     @Transactional
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Estado cadastrar(@RequestBody @Valid Estado estado) {
-        log.info(String.format("Salvar Estado POST v1/estados - %s", estado.getDsUf()));
+    public ResponseEntity<EstadoDTO> cadastrar(@RequestBody @Valid EstadoInputDTO estadoInputDTO) {
+        log.info(String.format("Salvar Estado POST v1/estados/%s", estadoInputDTO.getDsUf()));
 
-       // Estado estado = estadoDTODisassembler.toDomainObject(estadoInputDTO);
+        Estado estado = estadoDTODisassembler.toDomainObject(estadoInputDTO);
         estado = estadoService.salvar(estado);
-        return estado;
+        return ResponseEntity.ok(estadoDTOAssembler.toModel(estado));
     }
 
-//    @Transactional
-//    @PutMapping("{sqEstado}")
-//    public EstadoDTO alterar(@PathVariable Long sqEstado, @RequestBody @Valid EstadoInputDTO estadoInputDTO) {
-//        log.info(String.format("Alterar Estado PUT v1/estados/ID - %s", sqEstado));
-//        var estadoAtual = estadoService.buscar(sqEstado);
-//
-//        estadoDTODisassembler.copyToDomainObject(estadoInputDTO, estadoAtual);
-//        estadoAtual = estadoService.alterar(estadoAtual);
-//        return estadoDTOAssembler.toModel(estadoAtual);
-//    }
-
     @Transactional
-    @PutMapping("{sqEstado}")
-    public Estado alterar(@PathVariable Long sqEstado, @RequestBody @Valid Estado estado) {
+    @PutMapping("/{sqEstado}")
+    public ResponseEntity<EstadoDTO> alterar(@PathVariable Long sqEstado, @RequestBody @Valid EstadoInputDTO estadoInputDTO) {
         log.info(String.format("Alterar Estado PUT v1/estados/ID - %s", sqEstado));
         var estadoAtual = estadoService.buscar(sqEstado);
 
-        estadoAtual.setDsNome(estado.getDsNome());
-        estadoAtual.setDsUf(estado.getDsUf());
-
-     //   estadoDTODisassembler.copyToDomainObject(estadoInputDTO, estadoAtual);
+        estadoDTODisassembler.copyToDomainObject(estadoInputDTO, estadoAtual);
         estadoAtual = estadoService.alterar(estadoAtual);
-        return estadoAtual;
+        return ResponseEntity.ok(estadoDTOAssembler.toModel(estadoAtual));
     }
 
-
-
     @Transactional
-    @DeleteMapping("{sqEstado}")
+    @DeleteMapping("/{sqEstado}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Long sqEstado) {
         log.info(String.format("Excluir Estado DELETE v1/estados/ID - %s", sqEstado));

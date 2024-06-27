@@ -1,7 +1,7 @@
 package com.lodoviko.convencao.api.v1.assembler;
 
-import com.lodoviko.convencao.api.v1.dto.model.EstadoDTO;
-import com.lodoviko.convencao.domain.model.Estado;
+import com.lodoviko.convencao.api.v1.dto.model.ConvencaoDTO;
+import com.lodoviko.convencao.domain.model.Convencao;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,18 +10,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class EstadoDTOAssembler {
+public class ConvencaoDTOAssembler {
 
     @Autowired
-    private ModelMapper modelmapper;
+    private ModelMapper modelMapper;
 
-
-    public EstadoDTO toModel(Estado estado) {
-       return modelmapper.map(estado, EstadoDTO.class);
+    public ConvencaoDTO toModel(Convencao convencao) {
+        return modelMapper.map(convencao, ConvencaoDTO.class);
     }
 
-    public List<EstadoDTO> toCollectionModel(List<Estado> estados) {
-        return estados
+    public List<ConvencaoDTO> toCollectionMode(List<Convencao> convencaos) {
+        return convencaos
                 .stream()
                 .map(this::toModel)
                 .collect(Collectors.toList());
